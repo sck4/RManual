@@ -14,7 +14,7 @@ Our approach creates lasting, positive change through assessments, trainings, ad
 
 # Better Work's R Manual
 
-The aim of this repository is to create a community of practice and document relevant R functions for exploratory research using Better Work's Core Services data.
+The aim of this repository is to form and cultivate a community of practice around Better Work's Core Services data, and document relevant R functions for exploratory research.
 
 # Contributing
 
