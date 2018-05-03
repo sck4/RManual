@@ -1,4 +1,6 @@
-<img width="280" src="https://betterwork.org/dev/wp-content/uploads/2016/09/BWlogo-Horiz-rgb.png" alt="logo>
+<p align="center">
+  <img width="280" src="https://betterwork.org/dev/wp-content/uploads/2016/09/BWlogo-Horiz-rgb.png" alt="logo>
+                                                                                                         </p>
                                                                                                        
 A partnership between the UN's International Labour Organization and the International Finance Corporation, a member of the World Bank Group, Better Work brings diverse groups together - governments, global trends, factory owners, and union workers - to improve working conditions in the garment industry and make the sector more competitive.
 
