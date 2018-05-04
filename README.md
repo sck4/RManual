@@ -18,4 +18,4 @@ The aim of this repository is to form and cultivate a community of practice arou
 
 # Contributing
 
-Your contributions are welcome.
+We welcome your feedback and contributions.
