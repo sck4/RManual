@@ -1,0 +1,4 @@
+#Counting Factories per Cycle (change filename with relevant name)
+cycle_and_presence <- filename%>%
+group_by(CP,Cycle)%>%
+summarise(n_factories = n_distinct(Quest.ID))
