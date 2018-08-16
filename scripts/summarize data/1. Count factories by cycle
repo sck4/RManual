@@ -1,3 +1,0 @@
-cycle_and_presence <- dataframe%>%
-group_by(CP,Cycle)%>%
-summarise(n_factories = n_distinct(Quest.ID))
