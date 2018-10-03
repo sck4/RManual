@@ -114,8 +114,46 @@ get_compliance_data_date_and_cycle <- function(df,m1,m2,y1,y2,cycle){
 #here, we calculate noncompliance rates between June 2015 and July 2017 for all first assessment cycles. The criteria can be replaced with a different timeframe and cycle number following the order: "m1, m2, y1, y2, cycle" where m1 and y1 is the start date (month and year), and m2 and y2 the end date of the specified timeframe, and cycle is the cycle number that we wish to take into consideration. 
 noncompliance_cp_example_cycle <- get_compliance_data_date_and_cycle(assessment_example,6,7,2015,2017,1)
 ```
-
 ## iii. By latest date in a given time frame for each factory
+```{r}
+#store the function
+get_compliance_all_latest_cycles_specified_dates <- function(df,m1,m2,y1,y2){
+    temp_df <- df
+    temp_df$date_final <- as.Date(temp_df$Assesment.Start.Date, "%d/%m/%Y")
+    temp_df$Year <- as.numeric(format(temp_df$date_final, "%Y"))
+    temp_df$Month <- as.numeric(format(temp_df$date_final, "%m"))
+    if(y1 == y2){
+      temp_df <- temp_df[(temp_df$Year == y1 & temp_df$Month >= m1 & temp_df$Month <= m2),]
+    }else{
+      temp_df <- temp_df[(temp_df$Year == y1 & temp_df$Month >= m1) |
+                                 (temp_df$Year == y2 & temp_df$Month <= m2)|
+                         (temp_df$Year > y1 & temp_df$Year < y2),]
+    }
+    temp_df$Cycle <- as.numeric(temp_df$Cycle)
+    latest_date_for_each_factory <- temp_df %>%
+      group_by(Factory.Assessed.Name)%>%
+      summarise(Quest.ID = max(Quest.ID))
+    temp_df <- inner_join(temp_df,latest_date_for_each_factory,
+                           by = c('Factory.Assessed.Name','Quest.ID'))
+    summary(temp_df$latest_assessment_date)
+    temp_df <- temp_df[temp_df$Question.type != "FGW",]
+    temp_df$Finding <- as.integer(temp_df$Finding)
+    compliance_calc <- temp_df%>%
+      group_by(Cluster, Quest.ID,CP,Cycle)%>%
+      summarise(findings = sum(Finding))
+    compliance_calc$non_compliant <-ifelse(compliance_calc$findings >0,1,0) 
+    compliance_df <- compliance_calc%>%
+      group_by(CP,Cluster,Cycle)%>%
+      summarise(total_factories=n(),number_non_compliant= sum(non_compliant), percent_non_cp = sum(non_compliant)/n())
+    return (compliance_df)
+}
+
+#use the function (example)
+#here,we calculate noncompliance rates between October 2015 and December 2017. The specified dates can be replaced with a different timeframe following the order: “m1, m2, y1, y2,” where m1 and y1 is the start date (month and year), and m2 and y2 the end date of the specified timeframe taken into consideration
+noncompliance_latest_bycycle <- get_compliance_all_latest_cycles_specified_dates(assessment_example,10,12,2015,2017)
+```
+
+## iv. By latest date in a given time frame for each factory
 ```{r}
 #store the function
 get_compliance_each_factory_dates_cp <- function(df,m1,m2,y1,y2){
