@@ -35,7 +35,7 @@ cycle_and_presence <- assessment_example%>%
 ```
 
 # b) Noncompliance at the Q level
-## i. by latest assessment in specified dates
+## i. By latest assessment in specified dates
 ```{r}
 #store the function
 get_compliance_question_by_time_period <- function(df,m1,m2,y1,y2){
