@@ -34,7 +34,8 @@ cycle_and_presence <- assessment_example%>%
 
 ```
 
-# Noncompliance at the CP level: by latest assessment in specified dates
+# a) Noncompliance at the CP level
+## i. By latest assessment in specified dates
 ```{r}
 #store the function
 get_compliance_data_passing_df <- function(df,m1,m2,y1,y2){
@@ -73,7 +74,7 @@ get_compliance_data_passing_df <- function(df,m1,m2,y1,y2){
 noncompliance_rate_example <-get_compliance_data_passing_df(assessment_example,6,7,2015,2017)
 ```
 
-# Noncompliance at the CP level: For a chosen cycle in specified dates
+## i. For a chosen cycle in specified dates
 ```{r}
 #store the function
 get_compliance_data_date_and_cycle <- function(df,m1,m2,y1,y2,cycle){
@@ -114,7 +115,7 @@ get_compliance_data_date_and_cycle <- function(df,m1,m2,y1,y2,cycle){
 noncompliance_cp_example_cycle <- get_compliance_data_date_and_cycle(assessment_example,6,7,2015,2017,1)
 ```
 
-# Noncompliance at the CP level: By latest date in a given time frame for each factory
+## iii. By latest date in a given time frame for each factory
 ```{r}
 #store the function
 get_compliance_each_factory_dates_cp <- function(df,m1,m2,y1,y2){
