@@ -16,8 +16,8 @@ Research and collaboration are integral to expanding the reach of Better Work an
 **Find out more about Better Work [here](https://betterwork.org/)**
 
 
-# R Manual
+## R Manual
 The aim of this repository is to form and cultivate a community of practice around Better Work's Core Services data, and document relevant R functions for exploratory research.
 
-# Contributing
+## Contributing
 We welcome your feedback and contributions.
