@@ -1,5 +1,5 @@
-## Did you know that about 80 percent of data analysis is spent on the process of cleaning and preparing the data? 
-# To alleviate and simplify this effort, this folder contains scripts to:
+## Did you know that about 80 percent of data analysis is spent on the process of cleaning and preparing data? 
+# To simplify this effort, this folder contains scripts to:
 * Create a balanced panel dataset
 * Transform the data between long and wide format
 * Transform questions for information only into numeric variables, containing data on key factory characteristics
