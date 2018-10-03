@@ -6,4 +6,4 @@
 * Converge multiple questions and choose their latest formulation as the question label
 * Merge different data sources, specifically assessment and social dialogue data
 
-These steps are not exhaustive, and readers are encouraged to seek additional guidance to supplement this information with statistics or econometrics manuals
+These steps are not exhaustive, we recommend to seek additional guidance to supplement this information with statistics or econometrics manuals and welcome your contribution
