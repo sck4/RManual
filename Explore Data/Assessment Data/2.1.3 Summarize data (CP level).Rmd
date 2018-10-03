@@ -74,7 +74,7 @@ get_compliance_data_passing_df <- function(df,m1,m2,y1,y2){
 noncompliance_rate_example <-get_compliance_data_passing_df(assessment_example,6,7,2015,2017)
 ```
 
-## i. For a chosen cycle in specified dates
+## ii. For a chosen cycle in specified dates
 ```{r}
 #store the function
 get_compliance_data_date_and_cycle <- function(df,m1,m2,y1,y2,cycle){
