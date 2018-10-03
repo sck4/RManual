@@ -12,7 +12,7 @@ In order to achieve this, the programme works to improve conditions in individua
 
 Research and collaboration are integral to expanding the reach of Better Work and measure the impact of improved working conditions on workers’ wellbeing, business profits, and communities at large. For this reason, Better Work collects a wealth of factory-level information through its ongoing operations – this data tracks the progress factories make over time in improving compliance with international labour standards and national laws, the type of specialized training the factory invests in, and the extent to which advisory services are taken up by the factory. 
 
-** Find out more about Better Work [here](https://betterwork.org/)*
+**Find out more about Better Work [here](https://betterwork.org/)**
 
 
 # R Manual
