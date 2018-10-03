@@ -1,0 +1,61 @@
+---
+title: "2.1.2 Enter and clean data"
+output: html_document
+---
+
+# Open data
+```{r}
+#install packages
+install.packages("reshape2")
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("lubridate")
+install.packages("tcltk")
+install.packages("rJava")
+
+#load packages
+library(reshape2)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(tcltk)
+library(rJava)
+
+#open sample dataset
+assessment_example <- read.csv("Manual assessment sample dataset.csv",header = T, stringsAsFactors = F)
+
+```
+
+# Find out timeframe
+```{r}
+#store the function
+get_date_range <- function(df){
+  df$final_date <- as.Date(df$Assesment.Start.Date, "%d/%m/%Y")
+  latest_and_earliest <- df%>%
+    group_by(Country)%>%
+    summarise(min_date = min(final_date),max_date = max(final_date))
+  return(latest_and_earliest)
+}
+
+#use the function
+assessment_example_range <- get_date_range(assessment_example)
+View(assessment_example_range)
+
+```
+
+# Create time variable
+```{r}
+assessment_example$date_final <- as.Date(assessment_example$Assesment.Start.Date, "%d/%m/%Y")
+    assessment_example$Year <- as.numeric(format(assessment_example$date_final, "%Y"))
+    temp_df$Month <- as.numeric(format(assessment_example$date_final, "%m"))
+
+```
+
+# Filter data
+```{r}
+#example
+Freedom_of_association_data <- assessment_example%>%
+  filter(Cluster == "Freedom of Association and Collective Bargaining")
+
+
+```
