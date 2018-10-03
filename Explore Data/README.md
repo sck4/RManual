@@ -1,1 +1,1 @@
-
+In this folder, we illustrate key functions and scripts to explore assessment and advisory data, as detailed in Chapter 2 of the Manual. The aim of this section is to provide an overview of the variables and ways to examine compliance with labour standards both at the enterprise level and in aggregate terms (or by standard), and the components of Better Work's advisory services (i.e. PICCs Members Report, Improvement Plans and the second Progress Report, PR2).
