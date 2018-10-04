@@ -1,0 +1,52 @@
+---
+title: "3.3 From FGW to Numeric Variable"
+output: html_document
+---
+
+# Run before preparing data
+```{r}
+#install packages
+install.packages("reshape2")
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("lubridate")
+install.packages("tcltk")
+install.packages("rJava")
+
+#load packages
+library(reshape2)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(tcltk)
+library(rJava)
+```
+
+# Open data
+```{r}
+assessment_example <- read.csv("Manual assessment sample dataset.csv",header = T, stringsAsFactors = F)
+```
+
+# Recode questions for information only as numeric variables
+## a) Example of question containing numeric information
+```{r}
+example_dataset[example_dataset$Q.Label == "How many total workers are employed by the factory?",]$Finding <- as.integer(example_dataset[example_dataset$Q.Label == "How many total workers are employed by the factory?",]$Finding)
+
+```
+
+## b) Example of question with YES/NO answers
+```{r}
+#store the function (TBD)
+convert_text_to_numeric_answer <- function(finding){
+  test_portion <- substring(finding, 1,6)
+  if(grepl("No", test_portion)){
+    return (as.integer(1))
+  }else if(grepl("Yes", test_portion)){
+    return (as.integer(0))
+  }else{
+    return (as.integer(3))
+  }
+} 
+
+#use the function (TBD)
+```
