@@ -24,7 +24,7 @@ PICC_members_report_example <- PICC_members_report_example[PICC_members_report_e
 PICC_members_report_example <- PICC_members_report_example[PICC_members_report_example$Date.Left == "",]
 ```
 
-# Count Members 
+# Count members 
 ## Men and women in PICC by occupation
 ```{r}
 men_PICC <- PICC_members_report_example%>%
