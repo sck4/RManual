@@ -1,0 +1,38 @@
+---
+title: "2.2.3 PR2 (social dialogue)"
+output: html_document
+---
+
+# Run before summarizing data
+```{r}
+#install package
+install.packages("dplyr")
+#load package
+library(dplyr)
+```
+
+# Open data
+```{r}
+pr_data_example <- read.csv("PR2 sample dataset.csv",header = T, stringsAsFactors = F)
+```
+
+# Summarize progress in social dialogue 
+```{r}
+number_on_track_factory <- pr_data%>%
+  filter(answer == "On track")%>%
+  group_by(organization_id, organization_name, cycle_number)%>%
+  summarise(total_on_track = n())
+number_on_track_factory$organization_id <- number_on_track_factory$organization_id 
+
+number_moderate_progress_factory <- pr_data%>%
+  filter(answer == "Moderate progress")%>%
+  group_by(organization_id, organization_name, cycle_number)%>%
+  summarise(total_moderate_progress = n())
+number_moderate_progress_factory$organization_id <- number_moderate_progress_factory$organization_id
+
+number_no_progress_factory <- pr_data%>%
+  filter(answer == "No progress")%>%
+  group_by(organization_id, organization_name, cycle_number)%>%
+  summarise(total_no_progress = n())
+number_no_progress_factory$organization_id <- number_no_progress_factory$organization_id
+```
