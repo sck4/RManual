@@ -9,10 +9,11 @@ output: html_document
 install.packages("dplyr")
 #load package
 library(dplyr)
+```
 
-#open sample dataset
+# Open data
+```{r}
 PICC_members_report_example <- read.csv("PICC_Members_Report_03-08-2018.csv", header = T, stringsAsFactors = F)
-
 ```
 
 # Filter members
