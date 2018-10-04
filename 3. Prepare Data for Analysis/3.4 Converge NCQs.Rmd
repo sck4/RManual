@@ -250,7 +250,7 @@ cambodia_question_compliance_consolidation <- cambodia_question_compliance_conso
 View(cambodia_question_compliance_consolidation)
 ```
 
-## Merge and consolidate questions
+## Merge and consolidate data
 ```{r}
 #store the function
 question_merge_list_create <- function(question_to_merge_on,questions_to_get_rid_of,df){
