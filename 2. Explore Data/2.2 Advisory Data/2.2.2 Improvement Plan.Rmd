@@ -13,7 +13,6 @@ library(dplyr)
 
 # Open data
 ```{r}
-#open sample dataset
 Improvement_plan_example <- read.csv("Improvement_Plan_Report_03-08-2018.csv", header = T, stringsAsFactors = F)
 ```
 
