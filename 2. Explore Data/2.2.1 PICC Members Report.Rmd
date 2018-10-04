@@ -1,5 +1,5 @@
 ---
-title: "2.2.1 PICC Members Report
+title: "2.2.1 PICC Members Report"
 output: html_document
 ---
 
