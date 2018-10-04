@@ -1,0 +1,290 @@
+---
+title: "3.4 Converge noncompliance questions (NCQs)"
+output: html_document
+---
+
+# Run before preparing data
+```{r}
+#install packages
+install.packages("reshape2")
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("lubridate")
+install.packages("tcltk")
+install.packages("rJava")
+
+#load packages
+library(reshape2)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(tcltk)
+library(rJava)
+```
+
+# Open data
+```{r}
+cambodia <- read.csv("Cambodia assessment May 1 2017 to June 30 2018 (August 28 Extract).csv",header = T,stringsAsFactors = F)
+```
+
+
+# Converge questions
+## Summarize compliance by question
+```{r}
+get_compliance_question_by_time_period <- function(df,m1,m2,y1,y2){
+    # list_of_dfs <- list()
+  # for(country in countries){
+    temp_df <- df
+    temp_df <- temp_df[!grepl("(Obsolete)",temp_df$Factory.Assessed.Name),]
+    temp_df$date_final <- as.Date(temp_df$Assesment.Start.Date, "%d/%m/%Y")
+    temp_df$Year <- as.numeric(format(temp_df$date_final, "%Y"))
+    temp_df$Month <- as.numeric(format(temp_df$date_final, "%m"))
+    # temp_df$Cycle <- as.numeric(temp_df$Cycle)
+    if(y1 == y2){
+      temp_df <- temp_df[(temp_df$Year == y1 & temp_df$Month >= m1 & temp_df$Month <= m2),]
+    }else{
+      temp_df <- temp_df[(temp_df$Year == y1 & temp_df$Month >= m1) |
+                                 (temp_df$Year == y2 & temp_df$Month <= m2)|
+                         (temp_df$Year > y1 & temp_df$Year < y2),]
+    }
+    
+    latest_date_for_each_factory <- temp_df %>%
+      group_by(Factory.Assessed.Name)%>%
+      summarise(Quest.ID = max(Quest.ID))
+  
+    # latest_date_for_each_factory$latest_assessment_date <- 1
+
+    temp_df <- inner_join(temp_df,latest_date_for_each_factory,
+                           by = c('Factory.Assessed.Name','Quest.ID'))
+
+    temp_df <- temp_df[temp_df$Question.type != "FGW",]
+    
+    
+
+    temp_df$Finding <- as.integer(temp_df$Finding)
+    # temp_df$public_reporting <- grepl("Public Disclosure",temp_df$Tags)
+    temp_df$public_reporting <- ifelse(grepl("Public Disclosure",temp_df$Tags),1,0)
+    
+    compliance_question_count <- temp_df%>%
+      group_by(Q.Label,Question.ID,CP,Cluster,public_reporting,Tags)%>%
+      summarise(number_nc_factories = sum(Finding), total_factories = n_distinct(Quest.ID))
+
+    # final_name <- paste0(country,"_compliance_rate_table")
+  # assign(final_name,compliance_df)
+  # list_of_dfs <- list_of_dfs()
+    # list_of_dfs[[country]] <- compliance_question_count
+  # }
+    return (compliance_question_count)
+}
+
+cambodia_question_compliance <- get_compliance_question_by_time_period(cambodia,5,6,2017,2018) 
+```
+
+## Order CAT versions
+```{r}
+cambodia_ordinal_cat_factor <- function(x){
+  if(x == "Garment CAT"){
+    return(1)
+  }else if(x == "Garment CAT V2"){
+    return(2)
+  }
+}
+
+#Create an ordinal variable with CAT version order
+cambodia$CAT_version <- sapply(cambodia$TQ.Name, cambodia_ordinal_cat_factor)
+```
+
+# Method 1
+## View  the number of factories vs. questions
+```{r}
+cambodia_total_factories <- max(cambodia_question_compliance$total_factories) #227 compliance questions
+table(cambodia_question_compliance$total_factories)
+
+
+cambodia_question_compliance_consolidation <- cambodia_question_compliance%>%
+  filter(total_factories != cambodia_total_factories)%>%
+  arrange(Q.Label)
+```
+
+## Search keywords (emergency exits example)
+```{r}
+#store the funciton
+get_questions_by_keyword <- function(df,search_term,search_type = "words"){
+  
+  latest_overall_cat <- max(df$CAT_version)
+  # First get a table with Q.Labels based on the search term/words
+  # by default the search term is set to words, because if they pass a vector
+  # it will run as if its searching for a specific term, and if they pass
+  if(search_type == "words"){
+    reg_expression_string <- character()
+    for(word in search_term){
+      reg_expression_string <- paste(reg_expression_string,word,sep = "|")
+    }
+    reg_expression_string <- substr(reg_expression_string,2,nchar(reg_expression_string))
+    
+    table_with_all_questions <- df%>%
+      filter(grepl(reg_expression_string,Q.Label,ignore.case = T) & Question.type == "NCQ")
+    }else if(search_type == "phrase"){
+    table_with_all_questions <- df%>%
+      filter(grepl(search_term,Q.Label,ignore.case = T) & Question.type == "NCQ")
+  }
+  
+  # return(table_with_all_questions)
+  
+  list_of_data_frames <- list()
+  cps_in_df <-  unique(table_with_all_questions$CP)
+  for(ind_cp in cps_in_df){
+    
+    temp_table <- table_with_all_questions%>%
+      filter(CP == ind_cp)%>%
+      group_by(Cluster,CP,Q.Label)%>%
+      summarise(earliest_cat_appearance = min(CAT_version),
+                latest_cat_appearance = max(CAT_version))
+    
+    temp_table <- cbind(question_index = as.integer(rownames(temp_table)), temp_table)
+    
+    temp_table$latest_overall_cat <- latest_overall_cat
+    list_of_data_frames[[ind_cp]] <- temp_table
+  }
+  
+  return(list_of_data_frames)
+  
+}
+
+#use the function (example)
+example_merge_list_part_one <- question_merge_list_create(2,1,list_df_test$`Emergency Preparedness`)
+example_merge_list_part_two <- question_merge_list_create(4,3,list_df_test$`Emergency Preparedness`)
+
+example_merge_list_final <- rbind(example_merge_list_part_one, example_merge_list_part_two)
+```
+
+
+## Converge questions
+```{r}
+#store the function
+question_merge_list_create <- function(question_to_merge_on,questions_to_get_rid_of,df){
+  # below is loosely Q.Label and and converted_question
+  temp_df <- data.frame(Q.Label = character(),converted_question = character())
+  
+  for(i in 1:length(questions_to_get_rid_of)){
+
+    row_to_bind <- data.frame(Q.Label = df[df$question_index == questions_to_get_rid_of[i],]$Q.Label,
+                              converted_question = df[df$question_index == question_to_merge_on,]$Q.Label)
+    
+    temp_df <- rbind(temp_df,row_to_bind)
+  }
+
+  
+  row_to_bind <- data.frame(Q.Label = df[df$question_index == question_to_merge_on,]$Q.Label,
+                            converted_question = df[df$question_index == question_to_merge_on,]$Q.Label)
+    
+  temp_df <- rbind(temp_df,row_to_bind)
+    
+  temp_df$Q.Label <- as.character(temp_df$Q.Label)
+  temp_df$converted_question <- as.character(temp_df$converted_question)
+  return(temp_df)
+}
+
+#use the function (example)
+example_merge_list_part_one <- question_merge_list_create(2,1,list_df_test$`Emergency Preparedness`)
+example_merge_list_part_two <- question_merge_list_create(4,3,list_df_test$`Emergency Preparedness`)
+
+example_merge_list_final <- rbind(example_merge_list_part_one, example_merge_list_part_two)
+
+```
+
+## Consolidate data
+```{r}
+#store the funciton
+consolidate_or_merge_question_labels <- function(overall_data_frame, merge_data_frame,merge_consolidate = "consolidate"){
+  
+  if(merge_consolidate == "consolidate"){
+    output_df <- left_join(overall_data_frame,merge_data_frame,by=("Q.Label"))
+    output_df <- output_df[output_df$Question.type =="NCQ",]
+    output_df$Q.Label <- ifelse(is.na(output_df$converted_question),output_df$Q.Label,output_df$converted_question)
+  
+    return(output_df[,!(names(output_df) %in% "converted_question")])
+    
+  }else if(merge_consolidate == "merge"){
+    output_df <- left_join(overall_data_frame,merge_data_frame,by=("Q.Label"))
+    output_df <- output_df[output_df$Question.type =="NCQ",]
+    output_df$converted_question <- ifelse(is.na(output_df$converted_question),
+                                             output_df$Q.Label,output_df$converted_question)
+
+    output_df$Finding <- as.integer(output_df$Finding)
+
+    output_df <- output_df%>%
+      group_by(Country,CP,Cluster,Cycle,Quest.ID,Assesment.Start.Date,Factory.Assessed.ID,Factory.Assessed.Name,converted_question,Tags,Question.type)%>%
+      summarise(Finding = sum(Finding))
+
+    output_df$Finding <- ifelse(output_df$Finding >= 1, 1, 0)
+
+    output_df$Q.Label <- output_df$converted_question
+  }
+  return(output_df)
+  
+}
+
+#use the function (example)
+n_distinct(cambodia[cambodia$Question.type == "NCQ",]$Q.Label)
+
+test_qlabel_consolidation <- consolidate_or_merge_question_labels(cambodia,example_merge_list_final,"consolidate")
+n_distinct(test_qlabel_consolidation$Q.Label) #now there are less unique questions Q.Labels...
+```
+
+# Method 2
+## Narrow down questions
+```{r}
+# We narrow down the compliance questions that are not appearing the maximum number of times (in the example it should be 467). As in Method 1, we create a function to merge questions with similar wording, and use the wording corresponding to the latest CAT version to consolidate.
+cambodia_question_compliance_consolidation <- cambodia_question_compliance%>%
+  filter(total_factories != cambodia_total_factories)%>%
+  arrange(Q.Label)
+
+cambodia_question_compliance_consolidation <- cbind(question_index = as.integer(rownames(cambodia_question_compliance_consolidation)), cambodia_question_compliance_consolidation)
+
+cambodia_question_compliance_consolidation <- inner_join(cambodia_question_compliance_consolidation,cambodia_cat_table,by = "Q.Label")
+names(cambodia_question_compliance_consolidation)
+cambodia_question_compliance_consolidation <- cambodia_question_compliance_consolidation[,c("question_index", "Q.Label","CAT_version",
+                                                                                            "CP","Cluster","public_reporting","Tags","number_nc_factories",
+                                                                                            "total_factories")]
+View(cambodia_question_compliance_consolidation)
+```
+
+## Merge and consolidate questions
+```{r}
+#store the function
+question_merge_list_create <- function(question_to_merge_on,questions_to_get_rid_of,df){
+  # below is loosely Q.Label and and converted_question
+  temp_df <- data.frame(Q.Label = character(),converted_question = character())
+  
+  for(i in 1:length(questions_to_get_rid_of)){
+
+    row_to_bind <- data.frame(Q.Label = df[df$question_index == questions_to_get_rid_of[i],]$Q.Label,
+                              converted_question = df[df$question_index == question_to_merge_on,]$Q.Label)
+    
+    temp_df <- rbind(temp_df,row_to_bind)
+  }
+
+  
+  row_to_bind <- data.frame(Q.Label = df[df$question_index == question_to_merge_on,]$Q.Label,
+                            converted_question = df[df$question_index == question_to_merge_on,]$Q.Label)
+    
+  temp_df <- rbind(temp_df,row_to_bind)
+    
+  temp_df$Q.Label <- as.character(temp_df$Q.Label)
+  temp_df$converted_question <- as.character(temp_df$converted_question)
+  return(temp_df)
+}
+
+#use the function (example)
+cambodia_merge_list_part_one <- question_merge_list_create(1,2,cambodia_question_compliance_consolidation)
+cambodia_merge_list_part_two <- question_merge_list_create(3,4,cambodia_question_compliance_consolidation)
+
+cambodia_merge_list_final <- rbind(cambodia_merge_list_part_one, cambodia_merge_list_part_two)
+
+# consolidate questions
+n_distinct(cambodia[cambodia$Question.type == "NCQ",]$Q.Label) #227 Q.Labels for NCQs
+
+cambodia_qlabel_consolidation_example <- consolidate_or_merge_question_labels(cambodia,cambodia_merge_list_final,"consolidate")
+n_distinct(cambodia_qlabel_consolidation_example$Q.Label) #now there are less unique questions Q.Labels, 225, we consolidated 2
+```
