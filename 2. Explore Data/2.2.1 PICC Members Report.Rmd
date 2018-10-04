@@ -1,0 +1,42 @@
+---
+title: "2.2.1 PICC Members Report
+output: html_document
+---
+
+# Run before summarizing data
+```{r}
+#install package
+install.packages("dplyr")
+#load package
+library(dplyr)
+
+#open sample dataset
+PICC_members_report_example <- read.csv("PICC_Members_Report_03-08-2018.csv", header = T, stringsAsFactors = F)
+
+```
+
+# Filter members
+```{r}
+#Only current chairs:
+PICC_members_report_example <- PICC_members_report_example[PICC_members_report_example$Is.Current.Chair != "No",]
+
+#Only participating members:
+PICC_members_report_example <- PICC_members_report_example[PICC_members_report_example$Date.Left == "",]
+```
+
+# Count Members 
+## Men and women in PICC by occupation
+```{r}
+men_PICC <- PICC_members_report_example%>%
+filter(Title == "Mr.")%>%
+group_by(Category)%>%
+summarise(total_men = n())
+
+women_PICC <- PICC_members_report_example%>%
+filter(Title == "Ms.")%>%
+group_by(Category)%>%
+summarise(total_women = n())
+
+```
+
+
