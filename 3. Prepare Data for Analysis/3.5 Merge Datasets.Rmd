@@ -1,0 +1,24 @@
+---
+title: "3.5 Merge Datasets"
+output: html_document
+---
+
+# Run before preparing data
+```{r}
+#install package
+install.packages("dplyr")
+
+#load package
+library(dplyr)
+```
+
+# Open data
+```{r}
+assessment_example <- read.csv("Manual assessment sample dataset.csv",header = T, stringsAsFactors = F)
+pr_data_example <- read.csv("PR2 sample dataset.csv",header = T, stringsAsFactors = F)
+```
+
+# Merge assessment and PR2 (social dialogue)
+```{r}
+PR2_and_assessment <- inner_join(assessment_example, pr_data_example, by = c('Factory.Assessed.ID'='organization_id', 'Factory.Assessed.Name'='organization_name', 'Cycle'='cycle_number'))
+```
