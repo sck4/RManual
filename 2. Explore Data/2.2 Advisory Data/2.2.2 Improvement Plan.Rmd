@@ -1,0 +1,34 @@
+---
+title: "2.2.2 Improvement Plan""
+output: html_document
+---
+
+# Run before summarizing data
+```{r}
+#install package
+install.packages("dplyr")
+#load package
+library(dplyr)
+
+#open sample dataset
+Improvement_plan_example <- read.csv("Improvement_Plan_Report_03-08-2018.csv", header = T, stringsAsFactors = F)
+```
+
+# Track progress by CP
+```{r}
+Improvement_plan_inprogress <- Improvement_plan_example%>%
+filter(Status == "In Progress")%>%
+group_by(Compliance.point)%>%
+summarise(total_inprogress = n())
+
+Improvement_plan_pending <- Improvement_plan_example%>%
+filter(Status == "Pending")%>%
+group_by(Compliance.point)%>%
+summarise(total_pending = n())
+
+Improvement_plan_completed <- Improvement_plan_example%>%
+filter(Status == "Completed")%>%
+group_by(Compliance.point)%>%
+summarise(total_completed = n())
+```
+
