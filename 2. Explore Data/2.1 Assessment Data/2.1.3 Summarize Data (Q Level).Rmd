@@ -113,5 +113,5 @@ get_compliance_question_by_time_and_cycle <- function(df,m1,m2,y1,y2,cycle){
 
 #use the function (example)
 #we calculate noncompliance rates between May 2015 and July 2017 for all first assessment cycles. The criteria can be replaced with a different timeframe and cycle number following the order: "m1, m2, y1, y2, cycle" where m1 and y1 is the start date (month and year), and m2 and y2 the end date of the specified timeframe, and cycle is the cycle number that we wish to take into consideration 
-noncompliance_question_example_cycle <-get_compliance_question_by_time_and_cycle(assessment_example, 1,2,2017,2018)
+noncompliance_question_example_cycle <-get_compliance_question_by_time_and_cycle(assessment_example,3,7,2015,2017, 1)
 ```
